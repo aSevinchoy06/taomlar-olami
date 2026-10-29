@@ -1,0 +1,72 @@
+
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ recipe.title }} | Taomlar olami</title>
+    <style>
+        body {
+            max-width: 850px;
+            margin: 30px auto;
+            padding: 0 18px;
+            font-family: Arial, sans-serif;
+            line-height: 1.7;
+            background: #f7f8f3;
+            color: #263328;
+        }
+
+        article {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+        }
+
+        img {
+            max-width: 100%;
+            max-height: 420px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        a {
+            color: #286b45;
+        }
+
+        .instructions {
+            white-space: pre-line;
+        }
+    </style>
+</head>
+<body>
+    <p><a href="{% url 'recipes:home' %}">← Bosh sahifa</a></p>
+
+    <article>
+        <h1>{{ recipe.title }}</h1>
+
+        {% if recipe.image %}
+            <img src="{{ recipe.image.url }}" alt="{{ recipe.title }}">
+        {% endif %}
+
+        <p>{{ recipe.description }}</p>
+        <p><strong>Kategoriya:</strong> {{ recipe.category.name }}</p>
+        <p><strong>Tayyorlash vaqti:</strong> {{ recipe.cooking_time }} daqiqa</p>
+        <p><strong>Portsiyalar:</strong> {{ recipe.servings }}</p>
+
+        <h2>Masalliqlar</h2>
+        <ul>
+            {% for item in recipe.recipeingredient_set.all %}
+                <li>
+                    {{ item.ingredient.name }}
+                    {% if item.quantity %} — {{ item.quantity }}{% endif %}
+                </li>
+            {% empty %}
+                <li>Masalliqlar hali kiritilmagan.</li>
+            {% endfor %}
+        </ul>
+
+        <h2>Tayyorlanishi</h2>
+        <div class="instructions">{{ recipe.instructions }}</div>
+    </article>
+</body>
+</html>

@@ -1,0 +1,573 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Taomlar olami</title>
+
+<style>
+:root {
+    --bg: #ffffff;
+    --surface: #f8fafc;
+    --text: #17263b;
+    --muted: #64748b;
+    --line: #e2e8f0;
+    --accent: #ff7900;
+    --shadow: 0 5px 22px #17263b0c;
+}
+body.dark {
+    --bg: #090e15;
+    --surface: #111a26;
+    --text: #f1f5f9;
+    --muted: #a3b3c8;
+    --line: #263649;
+    --shadow: 0 5px 22px #0003;
+}
+* { box-sizing: border-box; }
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Segoe UI", Arial, sans-serif;
+    transition: background .25s, color .25s;
+}
+button, input, select { font: inherit; }
+button { cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+
+.layout {
+    display: grid;
+    grid-template-columns: 210px minmax(0,1fr);
+    min-height: 100vh;
+}
+.sidebar {
+    border-right: 1px solid var(--line);
+    padding: 22px 14px;
+    background: var(--surface);
+}
+.logo {
+    font-size: 23px;
+    font-weight: 800;
+    color: var(--text);
+    margin: 0 8px 34px;
+}
+.logo span, .accent { color: var(--accent); }
+.nav a {
+    display: block;
+    padding: 13px 12px;
+    margin: 5px 0;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    color: var(--muted);
+    transition: .2s;
+}
+.nav a:hover, .nav a.active {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: transparent;
+}
+.main { min-width: 0; }
+.topbar {
+    height: 65px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 25px;
+    border-bottom: 1px solid var(--line);
+}
+.topbar input {
+    width: min(380px, 50%);
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--text);
+    padding: 11px 15px;
+    border-radius: 25px;
+    outline: none;
+}
+.top-actions { display:flex; gap:9px; align-items:center; }
+.outline-btn {
+    padding: 9px 13px;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    background: transparent;
+    border-radius: 10px;
+}
+.outline-btn:hover {
+    background: var(--accent);
+    color: white;
+}
+select {
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    padding: 9px;
+}
+.content { padding: 25px; max-width: 1600px; margin: auto; }
+
+.hero {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+    align-items: center;
+    min-height: 260px;
+    padding: 28px;
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    background: var(--surface);
+    overflow: hidden;
+}
+.eyebrow {
+    display: inline-block;
+    padding: 7px 12px;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    border-radius: 30px;
+    font-size: 13px;
+}
+.hero h1 { font-size: clamp(29px,3vw,45px); line-height: 1.12; margin: 16px 0; }
+.hero p { color: var(--muted); line-height: 1.7; }
+.hero img {
+    width: 100%;
+    height: 245px;
+    object-fit: cover;
+    border-radius: 16px;
+}
+.searchbar {
+    display: flex;
+    gap: 10px;
+    margin-top: 18px;
+}
+.searchbar input {
+    min-width: 0;
+    flex: 1;
+    padding: 13px;
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    outline-color: var(--accent);
+}
+.primary {
+    border: 1px solid var(--accent);
+    border-radius: 10px;
+    padding: 12px 20px;
+    color: var(--accent);
+    background: transparent;
+    transition: .2s;
+}
+.primary:hover { background: var(--accent); color: white; }
+
+.categories {
+    display: grid;
+    grid-template-columns: repeat(6,minmax(0,1fr));
+    gap: 12px;
+    margin: 24px 0 30px;
+}
+.category {
+    border: 1px solid var(--line);
+    border-radius: 13px;
+    background: var(--bg);
+    color: var(--text);
+    padding: 10px;
+    text-align: center;
+    transition: .2s;
+}
+.category img {
+    width: 100%;
+    height: 85px;
+    object-fit: cover;
+    border-radius: 9px;
+}
+.category span { display:block; margin-top:9px; font-weight:600; font-size:13px; }
+.category:hover, .category.active {
+    border-color: var(--accent);
+    color: var(--accent);
+    transform: translateY(-2px);
+}
+
+.section-heading {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    margin: 10px 0 16px;
+}
+.section-heading h2 { margin:0; font-size:23px; }
+.recipe-grid {
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:16px;
+}
+.recipe-card {
+    min-width:0;
+    overflow:hidden;
+    border:1px solid var(--line);
+    border-radius:14px;
+    background:var(--bg);
+    box-shadow:var(--shadow);
+    transition:transform .2s,border-color .2s;
+}
+.recipe-card:hover { transform:translateY(-4px); border-color:var(--accent); }
+.recipe-image { position:relative; }
+.recipe-image img {
+    display:block;
+    width:100%;
+    height:175px;
+    object-fit:cover;
+}
+.recipe-info { padding:14px; }
+.recipe-info h3 { margin:5px 0 9px; font-size:17px; }
+.recipe-info p { color:var(--muted); font-size:13px; line-height:1.5; }
+.tag {
+    display:inline-block;
+    color:var(--accent);
+    border:1px solid #ff790066;
+    padding:4px 8px;
+    border-radius:20px;
+    font-size:11px;
+}
+.recipe-meta {
+    display:flex;
+    flex-wrap:wrap;
+    gap:12px;
+    color:var(--muted);
+    font-size:12px;
+    margin-top:12px;
+}
+.details-link {
+    display:inline-block;
+    margin-top:12px;
+    color:var(--accent);
+    border-bottom:1px solid transparent;
+}
+.details-link:hover { border-color:var(--accent); }
+.no-results { display:none; padding:30px; color:var(--muted); }
+footer {
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+    border-top:1px solid var(--line);
+    margin-top:30px;
+    padding:20px 0;
+    color:var(--muted);
+    font-size:12px;
+}
+
+@media(max-width:1100px) {
+    .recipe-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+    .categories { grid-template-columns:repeat(3,minmax(0,1fr)); }
+}
+@media(max-width:700px) {
+    .layout { grid-template-columns:1fr; }
+    .sidebar { padding:12px; border-right:0; border-bottom:1px solid var(--line); }
+    .logo { margin:5px 5px 12px; }
+    .nav { display:flex; gap:5px; overflow-x:auto; }
+    .nav a { white-space:nowrap; padding:9px; }
+    .topbar { padding:10px 14px; height:auto; flex-wrap:wrap; }
+    .topbar input { width:100%; }
+    .content { padding:14px; }
+    .hero { grid-template-columns:1fr; padding:18px; }
+    .hero img { height:210px; }
+    .categories { grid-template-columns:repeat(2,minmax(0,1fr)); }
+    .recipe-grid { grid-template-columns:1fr; }
+    .recipe-image img { height:220px; }
+    footer { flex-direction:column; }
+}
+</style>
+</head>
+
+<body>
+<div class="layout">
+
+<aside class="sidebar">
+    <div class="logo">Taomlar <span>olami</span></div>
+    <nav class="nav">
+        <a class="active" href="{% url 'recipes:home' %}" data-i18n="home">Bosh sahifa</a>
+        <a href="#recipes" data-i18n="recipes">Retseptlar</a>
+        <a href="#categories" data-i18n="categories">Kategoriyalar</a>
+        <a href="#footer" data-i18n="users">Foydalanuvchilar</a>
+        <a href="#footer" data-i18n="settings">Sozlamalar</a>
+    </nav>
+</aside>
+
+<main class="main">
+    <header class="topbar">
+        <input id="topSearch" type="search" placeholder="Taom nomini qidiring...">
+        <div class="top-actions">
+            <button class="outline-btn" id="themeBtn" type="button">Dark mode</button>
+            <select id="language" aria-label="Til">
+                <option value="uz">O‘zbekcha</option>
+                <option value="ru">Русский</option>
+                <option value="en">English</option>
+            </select>
+        </div>
+    </header>
+
+    <div class="content">
+        <section class="hero">
+            <div>
+                <span class="eyebrow" data-i18n="welcomeTag">Mazali retseptlar</span>
+                <h1><span data-i18n="welcome">Mazali taomlar olamiga</span><br>
+                    <span class="accent" data-i18n="welcome2">xush kelibsiz!</span>
+                </h1>
+                <p data-i18n="intro">Sevimli taomlaringizni toping, yangi retseptlarni o‘rganing va yaqinlaringizni mazali taomlar bilan xursand qiling.</p>
+                <form class="searchbar" id="searchForm" action="{% url 'recipes:home' %}" method="get">
+                    <input id="recipeSearch" name="q" type="search" placeholder="Taom nomini qidiring...">
+                    <button class="primary" type="submit" data-i18n="search">Qidirish</button>
+                </form>
+            </div>
+            <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=1000&q=85"
+                 alt="Yangi tayyorlangan mazali taom">
+        </section>
+
+        <section id="categories">
+            <div class="categories">
+                <button class="category active" data-category="all">
+                    <img src="https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=400&q=80" alt="Milliy taomlar">
+                    <span data-i18n="national">Milliy taomlar</span>
+                </button>
+                <button class="category" data-category="soup">
+                    <img src="https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=400&q=80" alt="Sho‘rvalar">
+                    <span data-i18n="soups">Sho‘rvalar</span>
+                </button>
+                <button class="category" data-category="fast">
+                    <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=400&q=80" alt="Burger">
+                    <span data-i18n="fast">Fast food</span>
+                </button>
+                <button class="category" data-category="salad">
+                    <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=400&q=80" alt="Salat">
+                    <span data-i18n="salads">Salatlar</span>
+                </button>
+                <button class="category" data-category="sweet">
+                    <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=400&q=80" alt="Tort">
+                    <span data-i18n="sweets">Shirinliklar</span>
+                </button>
+                <button class="category" data-category="drink">
+                    <img src="https://images.unsplash.com/photo-1513558161293-cdaf765edfd7?auto=format&fit=crop&w=400&q=80" alt="Ichimlik">
+                    <span data-i18n="drinks">Ichimliklar</span>
+                </button>
+            </div>
+        </section>
+
+        <section id="recipes">
+            <div class="section-heading">
+                <h2 data-i18n="recipes">Retseptlar</h2>
+                <span class="accent" data-i18n="fresh">Mazali va yangi</span>
+            </div>
+
+            <div class="recipe-grid" id="recipeGrid">
+                {% for recipe in recipes %}
+                <article class="recipe-card"
+                    data-title="{{ recipe.title|lower }}"
+                    data-category="{{ recipe.category.slug|default:'national'|lower }}">
+                    <div class="recipe-image">
+                        {% if recipe.image %}
+                        <img src="{{ recipe.image.url }}" alt="{{ recipe.title }}" loading="lazy">
+                        {% else %}
+                        <img src="https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=700&q=80"
+                             alt="{{ recipe.title }}" loading="lazy">
+                        {% endif %}
+                    </div>
+                    <div class="recipe-info">
+                        <span class="tag">{{ recipe.category.name|default:"Milliy taom" }}</span>
+                        <h3>{{ recipe.title }}</h3>
+                        <p>{{ recipe.description|truncatewords:15 }}</p>
+                        <div class="recipe-meta">
+                            <span>{{ recipe.cooking_time }} daqiqa</span>
+                            <span>{{ recipe.servings }} kishilik</span>
+                        </div>
+                        <a class="details-link" href="{% url 'recipes:detail' recipe.slug %}" data-i18n="view">
+                            Retseptni ko‘rish →
+                        </a>
+                    </div>
+                </article>
+                {% empty %}
+                <article class="recipe-card" data-title="osh palov" data-category="national">
+                    <div class="recipe-image">
+                        <img src="https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=700&q=85" alt="O‘zbek palovi" loading="lazy">
+                    </div>
+                    <div class="recipe-info">
+                        <span class="tag" data-i18n="national">Milliy taomlar</span>
+                        <h3 data-i18n="plov">O‘zbek palovi</h3>
+                        <p data-i18n="plovDesc">Sabzi, guruch va go‘shtdan tayyorlangan an’anaviy taom.</p>
+                        <div class="recipe-meta"><span>90 daqiqa</span><span>6 kishilik</span></div>
+                    </div>
+                </article>
+                <article class="recipe-card" data-title="manti" data-category="national">
+                    <div class="recipe-image">
+                        <img src="https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=700&q=85" alt="Manti" loading="lazy">
+                    </div>
+                    <div class="recipe-info">
+                        <span class="tag" data-i18n="national">Milliy taomlar</span>
+                        <h3 data-i18n="manti">Manti</h3>
+                        <p data-i18n="mantiDesc">Bug‘da pishiriladigan mazali xamirli taom.</p>
+                        <div class="recipe-meta"><span>60 daqiqa</span><span>4 kishilik</span></div>
+                    </div>
+                </article>
+                <article class="recipe-card" data-title="lagmon" data-category="soup">
+                    <div class="recipe-image">
+                        <img src="https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=700&q=85" alt="Lag‘mon" loading="lazy">
+                    </div>
+                    <div class="recipe-info">
+                        <span class="tag" data-i18n="soups">Sho‘rvalar</span>
+                        <h3 data-i18n="lagman">Lag‘mon</h3>
+                        <p data-i18n="lagmanDesc">Sabzavot, go‘sht va ugra bilan tayyorlanadi.</p>
+                        <div class="recipe-meta"><span>60 daqiqa</span><span>4 kishilik</span></div>
+                    </div>
+                </article>
+                <article class="recipe-card" data-title="burger gamburger" data-category="fast">
+                    <div class="recipe-image">
+                        <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=700&q=85" alt="Burger" loading="lazy">
+                    </div>
+                    <div class="recipe-info">
+                        <span class="tag">Fast food</span>
+                        <h3>Burger</h3>
+                        <p>Yangi sabzavot va go‘shtli kotletli burger.</p>
+                        <div class="recipe-meta"><span>25 daqiqa</span><span>2 kishilik</span></div>
+                    </div>
+                </article>
+                {% endfor %}
+            </div>
+            <p class="no-results" id="noResults">Bu qidiruv bo‘yicha retsept topilmadi.</p>
+        </section>
+
+        <footer id="footer">
+            <span>© 2026 Taomlar olami. Barcha huquqlar himoyalangan.</span>
+            <span data-i18n="footerText">Mazali taomlar — yaxshi kayfiyat!</span>
+        </footer>
+    </div>
+</main>
+</div>
+
+<script>
+const body = document.body;
+const themeBtn = document.getElementById("themeBtn");
+const language = document.getElementById("language");
+const recipeSearch = document.getElementById("recipeSearch");
+const topSearch = document.getElementById("topSearch");
+const cards = [...document.querySelectorAll(".recipe-card")];
+const categories = [...document.querySelectorAll(".category")];
+const noResults = document.getElementById("noResults");
+let activeCategory = "all";
+
+const translations = {
+    uz: {
+        home:"Bosh sahifa", recipes:"Retseptlar", categories:"Kategoriyalar",
+        users:"Foydalanuvchilar", settings:"Sozlamalar",
+        welcomeTag:"Mazali retseptlar", welcome:"Mazali taomlar olamiga",
+        welcome2:"xush kelibsiz!",
+        intro:"Sevimli taomlaringizni toping, yangi retseptlarni o‘rganing va yaqinlaringizni mazali taomlar bilan xursand qiling.",
+        search:"Qidirish", national:"Milliy taomlar", soups:"Sho‘rvalar",
+        fast:"Fast food", salads:"Salatlar", sweets:"Shirinliklar",
+        drinks:"Ichimliklar", fresh:"Mazali va yangi", view:"Retseptni ko‘rish →",
+        plov:"O‘zbek palovi", plovDesc:"Sabzi, guruch va go‘shtdan tayyorlangan an’anaviy taom.",
+        manti:"Manti", mantiDesc:"Bug‘da pishiriladigan mazali xamirli taom.",
+        lagman:"Lag‘mon", lagmanDesc:"Sabzavot, go‘sht va ugra bilan tayyorlanadi.",
+        footerText:"Mazali taomlar — yaxshi kayfiyat!", dark:"Tungi rejim", light:"Kunduzgi rejim"
+    },
+    ru: {
+        home:"Главная", recipes:"Рецепты", categories:"Категории",
+        users:"Пользователи", settings:"Настройки",
+        welcomeTag:"Вкусные рецепты", welcome:"Добро пожаловать в мир",
+        welcome2:"вкусных блюд!", intro:"Находите любимые блюда и открывайте новые рецепты.",
+        search:"Поиск", national:"Национальные блюда", soups:"Супы",
+        fast:"Фастфуд", salads:"Салаты", sweets:"Десерты", drinks:"Напитки",
+        fresh:"Вкусно и свежо", view:"Смотреть рецепт →",
+        plov:"Узбекский плов", plovDesc:"Традиционное блюдо с рисом, морковью и мясом.",
+        manti:"Манты", mantiDesc:"Вкусное блюдо из теста на пару.",
+        lagman:"Лагман", lagmanDesc:"Лапша с мясом и овощами.",
+        footerText:"Вкусная еда — хорошее настроение!", dark:"Тёмная тема", light:"Светлая тема"
+    },
+    en: {
+        home:"Home", recipes:"Recipes", categories:"Categories",
+        users:"Users", settings:"Settings",
+        welcomeTag:"Delicious recipes", welcome:"Welcome to the world of",
+        welcome2:"delicious food!", intro:"Find your favorite dishes and discover new recipes.",
+        search:"Search", national:"National food", soups:"Soups",
+        fast:"Fast food", salads:"Salads", sweets:"Desserts", drinks:"Drinks",
+        fresh:"Fresh and delicious", view:"View recipe →",
+        plov:"Uzbek Plov", plovDesc:"Traditional rice dish with carrots and meat.",
+        manti:"Manti", mantiDesc:"Delicious steamed dumplings.",
+        lagman:"Lagman", lagmanDesc:"Noodles served with meat and vegetables.",
+        footerText:"Good food — good mood!", dark:"Dark mode", light:"Light mode"
+    }
+};
+
+function translate(lang) {
+    document.documentElement.lang = lang;
+    document.querySelectorAll("[data-i18n]").forEach(el => {
+        const key = el.dataset.i18n;
+        if (translations[lang][key]) el.textContent = translations[lang][key];
+    });
+    recipeSearch.placeholder = lang === "ru" ? "Название блюда..." :
+        lang === "en" ? "Search for a dish..." : "Taom nomini qidiring...";
+    topSearch.placeholder = recipeSearch.placeholder;
+    themeBtn.textContent = body.classList.contains("dark")
+        ? translations[lang].light : translations[lang].dark;
+    localStorage.setItem("foodLanguage", lang);
+}
+
+function filterRecipes() {
+    const query = recipeSearch.value.trim().toLocaleLowerCase();
+    let count = 0;
+
+    cards.forEach(card => {
+        const title = (card.dataset.title || card.innerText).toLocaleLowerCase();
+        const description = card.innerText.toLocaleLowerCase();
+        const category = (card.dataset.category || "").toLocaleLowerCase();
+
+        const matchesText = !query || title.includes(query) || description.includes(query);
+        const matchesCategory = activeCategory === "all" ||
+            category.includes(activeCategory) ||
+            (activeCategory === "national" && category === "milliy-taom");
+
+        card.style.display = matchesText && matchesCategory ? "" : "none";
+        if (matchesText && matchesCategory) count++;
+    });
+
+    noResults.style.display = count ? "none" : "block";
+}
+
+recipeSearch.addEventListener("input", filterRecipes);
+topSearch.addEventListener("input", () => {
+    recipeSearch.value = topSearch.value;
+    filterRecipes();
+});
+
+document.getElementById("searchForm").addEventListener("submit", e => {
+    // Qidiruvni avval sahifadagi kartochkalarda bajarish.
+    e.preventDefault();
+    filterRecipes();
+    document.getElementById("recipes").scrollIntoView({behavior:"smooth"});
+});
+
+categories.forEach(btn => {
+    btn.addEventListener("click", () => {
+        categories.forEach(c => c.classList.remove("active"));
+        btn.classList.add("active");
+        activeCategory = btn.dataset.category;
+        filterRecipes();
+    });
+});
+
+function setTheme(dark) {
+    body.classList.toggle("dark", dark);
+    localStorage.setItem("foodTheme", dark ? "dark" : "light");
+    const lang = language.value;
+    themeBtn.textContent = dark ? translations[lang].light : translations[lang].dark;
+}
+themeBtn.addEventListener("click", () => setTheme(!body.classList.contains("dark")));
+
+language.addEventListener("change", () => translate(language.value));
+
+setTheme(localStorage.getItem("foodTheme") === "dark");
+language.value = localStorage.getItem("foodLanguage") || "uz";
+translate(language.value);
+filterRecipes();
+</script>
+</body>
+</html>
